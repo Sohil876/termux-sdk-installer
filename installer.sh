@@ -4,7 +4,7 @@
 #
 
 # Vars
-arch=$(uname -m)
+arch=$(dpkg --print-architecture)
 install_dir=${HOME}
 sdk_version=33.0.1
 with_cmdline=false
@@ -13,8 +13,6 @@ manifest="https://raw.githubusercontent.com/itsaky/androidide-build-tools/main/m
 # Color Codes
 red='\e[0;31m'             # Red
 green='\e[0;32m'        # Green
-#yellow='\e[0;33m'       # Yellow
-#purple='\e[0;35m'       # Purple
 cyan='\e[0;36m'          # Cyan
 white='\e[0;37m'        # White
 nocol='\033[0m'         # Default
@@ -22,7 +20,7 @@ nocol='\033[0m'         # Default
 # Functions
 banner() {
   echo -e "${green}------------------------------------------------"
-  echo "          Termux AndroidSDK Installer"
+  echo "          Termux Android SDK Installer"
   echo -e "               ${green}(${cyan}By ${green}-:- ${white}Sohil876${green})${nocol}"
   echo -e "${green}------------------------------------------------${nocol}"
 }
@@ -32,6 +30,11 @@ help() {
 $(echo -e "${green}Usage:${nocol}")
 -h,  --help             Shows brief help
 _EOL_
+}
+
+install_deps() {
+  apt update
+  pkg install curl wget termux-tools jq tar
 }
 
 # Main program
