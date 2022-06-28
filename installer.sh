@@ -118,7 +118,7 @@ install() {
   echo -e "${red}!${nocol}${green}This will download ~400MB size files and will take ~600MB space on disk.${nocol}"
   echo -e "Continue? ([${green}y${nocol}]es/[${red}N${nocol}]o): "
   read proceed
-  if ! ([[ "$proceed" = "y" || "$proceed" = "yes" || "$proceed" = "Y" || "$proceed" = "Yes" ]]); then
+  if ! ([[ "${proceed}" = "y" || "${proceed}" = "yes" || "${proceed}" = "Y" || "${proceed}" = "Yes" ]]); then
     echo -e "${red}Aborted!${nocol}"
     exit 1
   fi
@@ -126,34 +126,45 @@ install() {
   pkg install openjdk-17 -y
   echo -e "${green}Downloading sdk files...${nocol}"
   # Download and extract the Android SDK
-  download_and_extract "Android SDK" $sdk_url $install_dir "$install_dir/android-sdk.tar.xz"
+  download_and_extract "Android SDK" ${sdk_url} ${install_dir} "${install_dir}/android-sdk.tar.xz"
   # Download and extract cmdline tools
-  download_and_extract "Command line tools" $cmdline_url "$install_dir/android-sdk" "$install_dir/cmdline_tools.tar.xz"
+  download_and_extract "Command line tools" ${cmdline_url} "${install_dir}/android-sdk" "${install_dir}/cmdline_tools.tar.xz"
   # Setting env vars
   echo -e "${green}Setting up env vars...${nocol}"
   if [[ "${CURRENT_SHELL}" == "bash" ]]; then
-    shell_profile="${HOME}/.basrc"
+    shell_profile="${HOME}/.bashrc"
   elif [[ "${CURRENT_SHELL}" == "zsh" ]]; then
     shell_profile="${HOME}/.zshrc"
   else
     unsupported_shell_used=true
-    echo "${red}Unsupported shell!${nocol}"
-    echo "You will need to manually export env vars JAVA_HOME and ANDROID_SDK_ROOT on every session to use sdk:"
+    echo -e "${red}Unsupported shell!${nocol}"
+    echo -e "${green}You will need to manually export env vars JAVA_HOME, ANDROID_SDK_ROOT and ANDROID_HOME on every session to use sdk, or add them to your shell profile manually:${nocol}"
     echo "export JAVA_HOME=${PREFIX}/opt/openjdk-17"
     echo "export ANDROID_SDK_ROOT=${install_dir}/android-sdk"
-    exit 0
+    echo "export ANDROID_HOME=${install_dir}/android-sdk"
+    echo -e "${green}Also do the same for sdk and jdk bin locations:${nocol}"
+    echo "export PATH=${PREFIX}/opt/openjdk/bin:${install_dir}/android-sdk/cmdline-tools/latest/bin:${PATH}"
   fi
   if [[ -z "${unsupported_shell_used}" ]]; then
     if [[ -z "${JAVA_HOME}" ]]; then
       echo "JAVA_HOME=${PREFIX}/opt/openjdk" >> ${shell_profile}
     else
-      echo "${JAVA_HOME}"
+      echo "JAVA_HOME is already set to: ${JAVA_HOME}"
+      echo "Check if the path is correct, it should be: ${PREFIX}/opt/openjdk"
     fi
     if [[ -z "${ANDROID_SDK_ROOT}" ]]; then
       echo "ANDROID_SDK_ROOT=${install_dir}/android-sdk" >> ${shell_profile}
     else
-      echo "${ANDROID_SDK_ROOT}"
+      echo "ANDROID_SDK_ROOT is already set to: ${ANDROID_SDK_ROOT}"
+      echo "Check if the path is correct, it should be: ${install_dir}/android-sdk"
     fi
+    if [[ -z "${ANDROID_HOME}" ]]; then
+      echo "ANDROID_HOME=${install_dir}/android-sdk" >> ${shell_profile}
+    else
+      echo "ANDROID_HOME is already set to: ${ANDROID_HOME}"
+      echo "Check if the path is correct, it should be: ${install_dir}/android-sdk"
+    fi
+    echo "export PATH=${PREFIX}/opt/openjdk/bin:${install_dir}/android-sdk/cmdline-tools/latest/bin:${PATH}" >> ${shell_profile}
   fi
   apt clean
 }
@@ -178,13 +189,13 @@ case ${@} in
   -i|--install)
     banner
     if [[ ! -d ${install_dir} ]]; then
-      echo -e "${red}Your install directory doesn't exists!"
+      echo -e "${red}Your install directory doesn't exists!${nocol}"
       echo "If you didnt change in script then that means your home directory doesn't exist, in that case there's something wrong with your termux installation, please reinstall termux!"
       echo "Else if you've changed install directory var to something else make sure it exists!"
       exit 1
     fi
     install
-    echo -e "${green}Installed Android SDK and OpenJDK sucessfully!"
+    echo -e "${green}Installed Android SDK and OpenJDK sucessfully!${nocol}"
     echo -e "${green}Please restart termux${nocol}${red}!${nocol}"
     echo ""
     exit 0
