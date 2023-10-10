@@ -172,25 +172,25 @@ install() {
   fi
   if [[ -z "${unsupported_shell_used}" ]]; then
     if [[ -z "${JAVA_HOME}" ]]; then
-      echo '\nexport JAVA_HOME=${PREFIX}/opt/openjdk\n' >> ${shell_profile}
-      echo '\nexport PATH=${PREFIX}/opt/openjdk/bin:${PATH}\n' >> ${shell_profile}
+      echo -e '\nexport JAVA_HOME=${PREFIX}/opt/openjdk\n' >> ${shell_profile}
+      echo -e '\nexport PATH=${PREFIX}/opt/openjdk/bin:${PATH}\n' >> ${shell_profile}
     else
       echo "JAVA_HOME is already set to: ${JAVA_HOME}"
       echo "Check if the path is correct, it should be: ${PREFIX}/opt/openjdk"
     fi
     if [[ -z "${ANDROID_SDK_ROOT}" ]]; then
-      echo '\nexport ANDROID_SDK_ROOT=${HOME}/android-sdk\n' >> ${shell_profile}
+      echo -e '\nexport ANDROID_SDK_ROOT=${HOME}/android-sdk\n' >> ${shell_profile}
     else
       echo "ANDROID_SDK_ROOT is already set to: ${ANDROID_SDK_ROOT}"
       echo "Check if the path is correct, it should be: ${install_dir}/android-sdk"
     fi
     if [[ -z "${ANDROID_HOME}" ]]; then
-      echo '\nexport ANDROID_HOME=${HOME}/android-sdk\n' >> ${shell_profile}
+      echo -e '\nexport ANDROID_HOME=${HOME}/android-sdk\n' >> ${shell_profile}
     else
       echo "ANDROID_HOME is already set to: ${ANDROID_HOME}"
       echo "Check if the path is correct, it should be: ${install_dir}/android-sdk"
     fi
-    echo '\nexport PATH=${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/platform-tools:${PATH}\n' >> ${shell_profile}
+    echo -e '\nexport PATH=${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}\n' >> ${shell_profile}
   fi
   apt clean
 }
