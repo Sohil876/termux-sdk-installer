@@ -80,9 +80,19 @@ gen_data() {
   if ! command -v curl &> /dev/null; then
     echo -e "${red}curl is not installed!${nocol}"
     echo "Install it with pkg install curl"
+    echo ""
     exit 1
   fi
   curl --silent -L -o ${manifest} ${manifest_url}
+  if ! [[ -s ${manifest} ]]; then
+    echo -e "${red}Problem fetching manifest!${nocol}"
+    echo "Try again after some seconds"
+    echo ""
+    if [[ -f ${manifest} ]] then
+      rm ${manifest}
+    fi
+    exit 1
+  fi
   sdk_url=$(cat ${manifest} | jq -r .android_sdk)
   sdk_file=${sdk_url##*/}
   sdk_m_version=($(cat ${manifest} | jq .build_tools.${arch} | jq -r 'keys_unsorted[]'))
@@ -117,7 +127,7 @@ info() {
   echo -e "${green}Build tools url:${nocol} ${build_tools_url}"
   echo -e "${green}Commandline tools url:${nocol} ${cmdline_tools_url}"
   echo -e "${green}Platform tools url:${nocol} ${platform_tools_url}"
-  echo -e "${green}SDK from:${nocol} https://github.com/itsaky"
+  echo -e "${green}SDK from:${nocol} https://github.com/AndroidIDEOfficial/androidide-tools"
 }
 
 install() {
